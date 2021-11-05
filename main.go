@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	viewArr string = "v1"
+	view string = "v1"
 	active  = 0
 )
 
@@ -26,13 +26,13 @@ func setCurrentViewOnTop(g *gocui.Gui, name string) (*gocui.View, error) {
 
 func layout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
-	if v, err := g.SetView("v1", maxX/2-20, maxY/2, maxX/2+20, maxY/2+2); err != nil {
+	if v, err := g.SetView(view, maxX/2-20, maxY/2, maxX/2+20, maxY/2+2); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
 		v.Editable = true
 
-		if _, err = setCurrentViewOnTop(g, "v1"); err != nil {
+		if _, err = setCurrentViewOnTop(g, view); err != nil {
 			return err
 		}
 	}
