@@ -6,6 +6,8 @@ import (
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/mateusfdl/fdonkey-monkey-type/internal/utils"
 )
 
 type Text string
@@ -36,12 +38,5 @@ func loadText() string {
 
 	json.Unmarshal(body, &words)
 
-	text := make([]string, 0, max_length)
-
-	for i := 0; i <= max_length; i++ {
-		text = append(text, words.Words[i])
-
-	}
-
-	return strings.Join(text, " ")
+	return strings.Join(utils.New(words.Words).Shuffle().Chunck(max_length).Words, " ")
 }
