@@ -1,6 +1,7 @@
 package config
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -13,9 +14,15 @@ type Config interface {
 }
 
 var (
-	FilePath = fmt.Sprintf("%v/.config/fdonkey", homeDir())
-	FileType = "toml"
-	FileName = "theme"
+	FilePath     = fmt.Sprintf("%v/.config/fdonkey", homeDir())
+	FileType     = "toml"
+	FileName     = "theme"
+	DefaultTheme = []byte(`[theme]
+background = "#fff"
+success = "#000"
+fail = "#000"
+typed = "#000"
+`)
 )
 
 func init() {
@@ -27,7 +34,10 @@ func init() {
 func LoadConfig() Config {
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("fatal error config file: %w", err))
+		err := viper.ReadConfig(bytes.NewBuffer(DefaultTheme))
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	return viper.GetViper()
@@ -39,7 +49,7 @@ func CreateExampleConfigFile() {
 		log.Fatal(err)
 	}
 
-	err = os.WriteFile(fmt.Sprintf("%v/%v.%v", FilePath, FileName, FileType), exampleConfigFile(), 0660)
+	err = os.WriteFile(fmt.Sprintf("%v/%v.%v", FilePath, FileName, FileType), DefaultTheme, 0660)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,13 +63,4 @@ func homeDir() string {
 	}
 
 	return path
-}
-
-func exampleConfigFile() []byte {
-	return []byte(`[theme]
-background = "#fff"
-success = "#000"
-fail = "#000"
-typed = "#000"
-`)
 }
