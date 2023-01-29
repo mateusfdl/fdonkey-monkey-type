@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/muesli/termenv"
 	"github.com/thefuga/go-collections"
 )
 
@@ -29,4 +30,13 @@ func (s *Text) Chunck(size int) *Text {
 	s.Words = collections.ForPage(s.Words, 1, size)
 
 	return s
+}
+
+func Sprintf(fg, bg, s string) termenv.Style {
+	o := termenv.String(s)
+
+	o = o.Foreground(termenv.RGBColor(fg))
+	o = o.Background(termenv.RGBColor(bg))
+
+	return o
 }
