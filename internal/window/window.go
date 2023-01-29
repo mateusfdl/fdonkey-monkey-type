@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/mateusfdl/fdonkey-monkey-type/internal/config"
 	"golang.org/x/term"
 )
 
@@ -25,11 +26,14 @@ func NewWindow() Window {
 }
 
 func (w Window) Render(content string) string {
+	c := config.LoadConfig()
+
 	return lipgloss.NewStyle().
 		Width(w.Width).
 		Height(w.Height).
 		Align(lipgloss.Center).
 		AlignVertical(lipgloss.Position(w.AlignVertical)).
+		Background(lipgloss.Color(c.Theme.Background)).
 		Render(content)
 }
 
