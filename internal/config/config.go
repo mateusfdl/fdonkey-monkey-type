@@ -9,8 +9,15 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Config interface {
-	Get(field string) interface{}
+type Config struct {
+	Theme Theme `mapstructure:"theme"`
+}
+
+type Theme struct {
+	Background string `mapstructure:"background"`
+	Typed      string `mapstructure:"typed"`
+	Failed     string `mapstructure:"failed"`
+	Font       string `mapstructure:"font_color"`
 }
 
 var (
@@ -18,8 +25,7 @@ var (
 	FileType     = "toml"
 	FileName     = "theme"
 	DefaultTheme = []byte(`[theme]
-background = "#fff"
-success = "#000"
+background = "#3d4349"
 fail = "#000"
 typed = "#000"
 `)
@@ -32,15 +38,23 @@ func init() {
 }
 
 func LoadConfig() Config {
+	c := Config{}
+
 	err := viper.ReadInConfig()
 	if err != nil {
+		fmt.Println(err)
 		err := viper.ReadConfig(bytes.NewBuffer(DefaultTheme))
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	return viper.GetViper()
+	err = viper.Unmarshal(&c)
+	if err != nil {
+		log.Fatalf("%v", err)
+	}
+
+	return c
 }
 
 func CreateExampleConfigFile() {
