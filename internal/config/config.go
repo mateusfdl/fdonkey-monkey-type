@@ -1,11 +1,11 @@
 package config
 
 import (
-	"bytes"
 	"fmt"
 	"log"
 	"os"
 
+	"github.com/pelletier/go-toml/v2"
 	"github.com/spf13/viper"
 )
 
@@ -21,14 +21,9 @@ type Theme struct {
 }
 
 var (
-	FilePath     = fmt.Sprintf("%v/.config/fdonkey", homeDir())
-	FileType     = "toml"
-	FileName     = "theme"
-	DefaultTheme = []byte(`[theme]
-background = "#3d4349"
-fail = "#000"
-typed = "#000"
-`)
+	FilePath = fmt.Sprintf("%v/.config/fdonkey", homeDir())
+	FileType = "toml"
+	FileName = "theme"
 )
 
 func init() {
@@ -42,10 +37,8 @@ func LoadConfig() Config {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		fmt.Println(err)
-		err := viper.ReadConfig(bytes.NewBuffer(DefaultTheme))
-		if err != nil {
-			log.Fatal(err)
+		c = Config{
+			Theme: DefaultTheme(),
 		}
 	}
 
@@ -63,11 +56,29 @@ func CreateExampleConfigFile() {
 		log.Fatal(err)
 	}
 
-	err = os.WriteFile(fmt.Sprintf("%v/%v.%v", FilePath, FileName, FileType), DefaultTheme, 0660)
+	f, err := os.Create(fmt.Sprintf("%v/%v.%v", FilePath, FileName, FileType))
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	c := Config{
+		Theme: DefaultTheme(),
+	}
+
+	toml.NewEncoder(f).Encode(c)
+
+	if err := f.Close(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func DefaultTheme() Theme {
+	return Theme{
+		Background: "#1F1F28",
+		Typed:      "#999999",
+		Failed:     "#ff3a3a",
+		Font:       "#bcbcbc",
+	}
 }
 
 func homeDir() string {
