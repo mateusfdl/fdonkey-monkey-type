@@ -1,0 +1,5 @@
+[Theme]
+Background = '#1F1F28'
+Typed = '#999999'
+Failed = '#ff3a3a'
+Font = '#bcbcbc'
