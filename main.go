@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 
 	"github.com/mateusfdl/fdonkey-monkey-type/internal/config"
 	"github.com/mateusfdl/fdonkey-monkey-type/internal/model"
@@ -29,8 +28,6 @@ func main() {
 		Typed: []rune{},
 		Theme: theme,
 	}
-	fmt.Println(m.Theme.Font)
-	fmt.Println(m.Theme.Typed)
-	fmt.Println(m.Theme.Failed)
+
 	model.Start(m)
 }
