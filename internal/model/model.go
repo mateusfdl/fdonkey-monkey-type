@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 
@@ -50,20 +51,27 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	remaining := string(m.Text[len(m.Typed):])
-
-	var typed string
-	for i, c := range m.Typed {
-		if c == rune(m.Text[i]) {
-			typed += utils.Sprintf(m.Theme.Typed, m.Theme.Background, string(c)).String()
-			//typed += fmt.Sprintf("\x1B[28;2;249;38;114m%v\x1B[0m", string(c))
-		} else {
-			typed += utils.Sprintf(m.Theme.Failed, m.Theme.Background, string(m.Text[i])).String()
-		}
-
+	if len(m.Typed) > len(m.Text) {
+		return ""
 	}
 
-	return window.NewWindow().Render(fmt.Sprintf("%s%s", typed, utils.Sprintf(m.Theme.Font, m.Theme.Background, remaining).String()))
+	var b strings.Builder
+	b.Grow(len(m.Text) * 30)
+
+	for i, c := range m.Typed {
+		if c == m.Text[i] {
+			b.WriteString(utils.Sprintf(m.Theme.Typed, m.Theme.Background, string(c)).String())
+		} else {
+			b.WriteString(utils.Sprintf(m.Theme.Failed, m.Theme.Background, string(m.Text[i])).String())
+		}
+	}
+
+	if len(m.Typed) < len(m.Text) {
+		remaining := string(m.Text[len(m.Typed):])
+		b.WriteString(utils.Sprintf(m.Theme.Font, m.Theme.Background, remaining).String())
+	}
+
+	return window.NewWindow().Render(b.String())
 }
 
 func Start(m Model) {
